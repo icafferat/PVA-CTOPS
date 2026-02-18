@@ -110,13 +110,26 @@ function updateDashboard() {
     ops[op].falta += d.falta;
   });
   const opNames = Object.keys(ops);
+  // Function to get short labels for operation types
+  const getShortLabel = (op) => {
+    if (!op) return op;
+    const rapMatch = op.match(/RAP\s*\d+/i);
+    if (rapMatch) return rapMatch[0].toUpperCase();
+    const lower = op.toLowerCase();
+    if (lower.includes('centros de entrenamiento')) return 'CEAC';
+    if (lower.includes('centro de instrucción')) return 'CIAC';
+    if (lower.includes('aviación general')) return 'AG';
+    if (lower.includes('explotador de servicios aéreos')) return 'ESA';
+    return op;
+  };
+  const opShortNames = opNames.map(op => getShortLabel(op));
   const planificadoVals = opNames.map(op => ops[op].planificado);
   const cumplidoVals = opNames.map(op => ops[op].cumplido);
   const faltaVals = opNames.map(op => ops[op].falta);
   const barData = [
-    { x: opNames, y: planificadoVals, name: 'Planificado', type: 'bar', marker: { color: '#1f77b4' } },
-    { x: opNames, y: cumplidoVals, name: 'Cumplido', type: 'bar', marker: { color: '#2ca02c' } },
-    { x: opNames, y: faltaVals, name: 'Falta', type: 'bar', marker: { color: '#e74c3c' } }
+    { x: opShortNames, y: planificadoVals, name: 'Planificado', type: 'bar', marker: { color: '#1f77b4' } },
+    { x: opShortNames, y: cumplidoVals, name: 'Cumplido', type: 'bar', marker: { color: '#2ca02c' } },
+    { x: opShortNames, y: faltaVals, name: 'Falta', type: 'bar', marker: { color: '#e74c3c' } }
   ];
   const barLayout = {
     barmode: 'group',
